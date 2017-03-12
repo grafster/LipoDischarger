@@ -15,16 +15,15 @@
 
 LiquidCrystal_I2C lcd (0x27, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
  
-#define gatePin 10
-#define highPin A0  
-#define lowPin A1
-
 #define CellCount 6
 #define RealCellCount 2
+#define PushButtonPin 2
 
 int gatePins [] = {8,9};
 int highPins [] = {A3, A5};
 int lowPins [] = {A4, A6};
+
+
 
 boolean finished[] = {false, false, false, false, false, false};
 
@@ -44,12 +43,17 @@ float battLow = 2.9;
  
 unsigned long previousMillis[] = {0,0,0,0,0,0};
 unsigned long millisPassed = 0;
+
+bool firstRun = true;
  
 void setup() {
  
   Serial.begin(9600);
   Serial.println("Battery Capacity Checker v1.1");
   Serial.println("battVolt   current     mAh");
+
+  pinMode(PushButtonPin, INPUT);
+  digitalWrite(PushButtonPin, HIGH);
 
   for (int i = 0; i < RealCellCount; i++)
   {
@@ -80,17 +84,48 @@ void setup() {
   lcd.print ("mAh                 ");
   
 }
+
+
+// Call this to reset the cell and start it discharging again
+void resetCell(int cellNo)
+{
+  // reset the capacity
+  mAh[cellNo] = 0;
+  finished[cellNo] = false;
+  previousMillis[cellNo] = millis();
+
+  //reopen the gate
+  digitalWrite(gatePins[cellNo], LOW);
+
+}
  
 void loop() {
+  
+
+  // if someone pressed the reset button 
+  if (digitalRead(PushButtonPin) == LOW)
+  {
+    Serial.print("Button PresseD");
+    // Loop through seeing what was finished
+    for (int i = 0; i < CellCount; i++)
+    {
+       if (finished[i])
+       {
+          // If it was finished, reset it
+          resetCell(i);
+       }
+    }
+  }
 
   // For each cell
   for (int i = 0; i < CellCount; i++)
   {
-    if (i % 3 == 0) 
+    if (i % 3 == 0 && !firstRun) 
     {
        delay(interval);
        
     }
+    firstRun = false;
     if (i < RealCellCount)
     {
       // Read the voltages
