@@ -41,6 +41,9 @@ unsigned long previousMillis[] = {0,0,0,0,0,0};
 unsigned long millisPassed = 0;
 
 bool firstRun = true;
+
+// Stores if the push button the restarts finished cells has been pressed in the previous cycle. 
+bool buttonPressed = false;
  
 void setup() {
  
@@ -94,14 +97,39 @@ void resetCell(int cellNo)
   digitalWrite(gatePins[cellNo], LOW);
 
 }
- 
+
+void checkButton()
+{
+  if (digitalRead(PushButtonPin) == LOW)
+  {
+    Serial.println("Button pressed");
+    buttonPressed = true;
+  }
+}
+
+// My version of delay, that checks periodically to see if the button has been pressed
+void mydelay(int interval)
+{
+  int  timeToSleep = 250;
+  int intervalCount = interval / timeToSleep;
+
+  for (int i = 0; i < intervalCount; i++)
+  {
+    delay(timeToSleep);
+    checkButton();
+  }
+  
+}
+
+
 void loop() {
   
 
   // if someone pressed the reset button 
-  if (digitalRead(PushButtonPin) == LOW)
+  if (buttonPressed)
   {
-    Serial.print("Button PresseD");
+    buttonPressed = false;
+    Serial.println("Button Press being processed");
     // Loop through seeing what was finished
     for (int i = 0; i < CellCount; i++)
     {
@@ -118,7 +146,7 @@ void loop() {
   {
     if (i % 3 == 0 && !firstRun) 
     {
-       delay(interval);
+       mydelay(interval);
        
     }
     firstRun = false;
@@ -257,5 +285,5 @@ void loop() {
   }
   
   }
-  delay(interval);
+  
 }    
