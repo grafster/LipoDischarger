@@ -27,7 +27,7 @@ int lowPins [] = {A4, A6};
 
 
 
-boolean finished[] = {false, false, false, false, false, false};
+boolean finished[CellCount];
 
 
  
@@ -35,7 +35,7 @@ boolean finished[] = {false, false, false, false, false, false};
 int printStart = 0;
 int interval = 5000;  //Interval (ms) between measurements
  
-float mAh []  = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+float mAh [CellCount];
 float shuntRes = 1.0;  // In Ohms - Shunt resistor resistance
 float voltRef = 5; // Reference voltage (probe your 5V pin) 
 float current = 0.0;
@@ -43,7 +43,7 @@ float battVolt = 0.0;
 float shuntVolt = 0.0;
 float battLow = 2.9;
  
-unsigned long previousMillis[] = {0,0,0,0,0,0};
+unsigned long previousMillis[CellCount];
 unsigned long millisPassed = 0;
 
 bool firstRun = true;
@@ -56,6 +56,14 @@ void setup() {
   Serial.begin(9600);
   Serial.println("Battery Capacity Checker v1.1");
   Serial.println("battVolt   current     mAh");
+
+  // Set all the finisheds to false, mAh's to zero
+  for (int i = 0; i < CellCount; i++)
+  {
+    finished[i] = false;
+    mAh[i] = 0.0;
+    previousMillis[i] = 0;
+  }
 
   pinMode(PushButtonPin, INPUT);
   digitalWrite(PushButtonPin, HIGH);
@@ -166,6 +174,7 @@ void loop() {
     }
     else
     {
+      // Dummy values for testing multiple pages
       battVolt = 9.6;
       shuntVolt = 6.2;
     }
@@ -184,7 +193,6 @@ void loop() {
        lcd.print("F");
     }
 
-    //battVolt = 8.62;
 
    // If we're still going, because the voltage is above the minimum, and we haven't already set finished to true
   if(battVolt >= battLow && finished[i] == false)
@@ -212,20 +220,7 @@ void loop() {
       lcd.setCursor (horizontalLCDPos ,3);
       lcd.print(String(mAh[i], 0));
 
- /*
-      myGLCD.clrScr();
-      myGLCD.print("Discharge",CENTER,0);
-      myGLCD.print("Voltage:",0,10);
-      myGLCD.printNumF(battVolt, 2,50,10);
-      myGLCD.print("v",77,10);
-      myGLCD.print("Current:",0,20);
-      myGLCD.printNumF(current, 2,50,20);
-      myGLCD.print("a",77,20);
-      myGLCD.printNumI(mAh,30,30);
-      myGLCD.print("mAh",65,30);
-      myGLCD.print("Running",CENTER,40);
-      myGLCD.update(); 
-   */    
+ 
       Serial.print(battVolt);
       Serial.print("\t");
       Serial.print(current);
@@ -238,35 +233,7 @@ void loop() {
       digitalWrite(gatePins[i], LOW);
       
       finished[i] = true;
-      /* 
-      if(mAh < 10) {
-        printStart = 40;
-      }
-      else if(mAh < 100) {
-        printStart = 30;
-      }
-      else if(mAh <1000) {
-        printStart = 24;
-      }
-      else if(mAh <10000) {
-        printStart = 14;
-      }
-      else {
-        printStart = 0;
-      }*/
-       /*
-      myGLCD.clrScr();
-      myGLCD.print("Discharge",CENTER,0);
-      myGLCD.print("Voltage:",0,10);
-      myGLCD.printNumF(battVolt, 2,50,10);
-      myGLCD.print("v",77,10);
-      myGLCD.setFont(MediumNumbers);
-      myGLCD.printNumI(mAh,printStart,21);
-      myGLCD.setFont(SmallFont);
-      myGLCD.print("mAh",65,30);
-      myGLCD.print("Complete",CENTER,40);
-      myGLCD.update(); 
-       */
+      
       lcd.setCursor (horizontalLCDPos ,1);
       lcd.print(String(battVolt, 2));
       
