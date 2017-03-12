@@ -1,13 +1,9 @@
 /* 
-* Battery Capacity Checker
-* Uses Nokia 5110 Display
+* Battery Capacity Checker - based on code by Adam Welch (http://AdamWelch.Uk)
+* 
 * Uses 1 Ohm power resister as shunt - Load can be any suitable resister or lamp
 * 
-* YouTube Video: https://www.youtube.com/embed/qtws6VSIoYk
-* 
-* http://AdamWelch.Uk
-* 
-* Required Library - LCD5110_Graph.h - http://www.rinkydinkelectronics.com/library.php?id=47
+*
 */
  
 #include <LiquidCrystal_I2C.h>
