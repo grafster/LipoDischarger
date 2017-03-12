@@ -41,7 +41,7 @@ float voltRef = 5; // Reference voltage (probe your 5V pin)
 float current = 0.0;
 float battVolt = 0.0;
 float shuntVolt = 0.0;
-float battLow = 3.94;
+float battLow = 2.9;
  
 unsigned long previousMillis[] = {0,0,0,0,0,0};
 unsigned long millisPassed = 0;
