@@ -3,8 +3,14 @@
 * 
 * Uses 1 Ohm power resister as shunt - Load can be any suitable resister or lamp
 * 
+* Supports discharging multiple cells at the same time
+* Once one is fully discharged it can be swapped for another. You can then press the push button and it will restart discharging any cells
+* previously marked as finished
 *
-*/
+*/ 
+
+// TODO: Should show finished immediately 
+// Should not show minus zero on the display when restarted
  
 #include <LiquidCrystal_I2C.h>
 #include <Wire.h>
@@ -35,7 +41,7 @@ float voltRef = 5; // Reference voltage (probe your 5V pin)
 float current = 0.0;
 float battVolt = 0.0;
 float shuntVolt = 0.0;
-float battLow = 2.9;
+float battLow = 3.94;
  
 unsigned long previousMillis[] = {0,0,0,0,0,0};
 unsigned long millisPassed = 0;
